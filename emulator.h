@@ -34,7 +34,7 @@ public:
     }
 
     HLS4MLModel* load_model() {
-        model_lib_ = dlopen(model_name_.c_str(), RTLD_LAZY);
+        model_lib_ = dlopen(model_name_.c_str(), RTLD_LAZY | RTLD_LOCAL);
         if (!model_lib_) {
             std::cerr << "Cannot load library: " << dlerror() << std::endl;
             throw "hls4ml emulator load_model() failure!";
