@@ -25,7 +25,7 @@ private:
 
 public:
     ModelLoader(std::string model_name) {
-        model_name_ = model_name;
+        model_name_ = std::move(model_name);
         model_name_.append(".so");
     }
     
