@@ -3,7 +3,7 @@ CXXFLAGS := -O3 -fPIC -std=$(CPP_STANDARD)
 
 .PHONY: clean
 
-emulator_interface.so: emulator.h
+emulator_interface.so: emulator.cc emulator.h
 	$(CXX) $(CXXFLAGS) -shared $^ -o $@
 
 clean:
