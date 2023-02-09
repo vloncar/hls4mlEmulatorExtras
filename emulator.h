@@ -19,47 +19,47 @@ typedef void destroy_model_cls(HLS4MLModel*);
 
 class ModelLoader {
 private:
-    std::string _model_name;
-    void* _model_lib;
-    HLS4MLModel* _model = nullptr;
+    std::string model_name_;
+    void* model_lib_;
+    HLS4MLModel* model_ = nullptr;
 
 public:
     ModelLoader(std::string model_name) {
-        _model_name = model_name;
-        _model_name.append(".so");
+        model_name_ = model_name;
+        model_name_.append(".so");
     }
     
     ~ModelLoader() {
-        dlclose(_model_lib);
+        dlclose(model_lib_);
     }
 
     HLS4MLModel* load_model() {
-        _model_lib = dlopen(_model_name.c_str(), RTLD_LAZY);
-        if (!_model_lib) {
+        model_lib_ = dlopen(model_name_.c_str(), RTLD_LAZY);
+        if (!model_lib_) {
             std::cerr << "Cannot load library: " << dlerror() << std::endl;
             return nullptr;
         }
         
-        create_model_cls* create_model = (create_model_cls*) dlsym(_model_lib, "create_model");
+        create_model_cls* create_model = (create_model_cls*) dlsym(model_lib_, "create_model");
         const char* dlsym_error = dlerror();
         if (dlsym_error) {
             std::cerr << "Cannot load symbol 'create_model': " << dlsym_error << std::endl;
             return nullptr;
         }
         
-        _model = create_model();
+        model_ = create_model();
         
-        return _model;
+        return model_;
     }
     
     void destroy_model() {
-        destroy_model_cls* destroy = (destroy_model_cls*) dlsym(_model_lib, "destroy_model");
+        destroy_model_cls* destroy = (destroy_model_cls*) dlsym(model_lib_, "destroy_model");
         const char* dlsym_error = dlerror();
         if (dlsym_error) {
             std::cerr << "Cannot load symbol destroy_model: " << dlsym_error << std::endl;
         }
-        if (_model != nullptr) {
-            destroy(_model);
+        if (model_ != nullptr) {
+            destroy(model_);
         }
     }
 
