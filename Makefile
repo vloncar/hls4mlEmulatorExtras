@@ -15,10 +15,8 @@ all: $(EMULATOR_LIB)
 	@echo All done
 
 install: all
-	@rm -rf $(PREFIX)/include $(PREFIX)/lib64
-	@mkdir -p $(PREFIX)/include $(PREFIX)/lib64
-	cp emulator.h $(PREFIX)/include/
-	cp -r ap_types $(PREFIX)/include/
+	@rm -rf $(PREFIX)/lib64
+	@mkdir -p $(PREFIX)/lib64
 	cp $(EMULATOR_LIB) $(PREFIX)/lib64
 
 $(EMULATOR_LIB): src/hls4ml/emulator.cc
