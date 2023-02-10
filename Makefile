@@ -7,6 +7,9 @@ endif
 .DEFAULT_GOAL := all
 .PHONY: clean all install
 
+HLS4ML_INCLUDE := include/hls4ml/
+INCLUDES := -I$(HLS4ML_INCLUDE)
+
 EMULATOR_LIB:=libemulator_interface.so
 all: $(EMULATOR_LIB)
 	@echo All done
@@ -18,8 +21,8 @@ install: all
 	cp -r ap_types $(PREFIX)/include/
 	cp $(EMULATOR_LIB) $(PREFIX)/lib64
 
-$(EMULATOR_LIB): emulator.cc emulator.h
-	$(CXX) $(CXXFLAGS) -shared $^ -o $@
+$(EMULATOR_LIB): src/hls4ml/emulator.cc
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -shared $^ -o $@
 
 clean:
 	rm $(EMULATOR_LIB)
