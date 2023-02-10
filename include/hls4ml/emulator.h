@@ -27,6 +27,12 @@ namespace hls4mlEmulator
 
     public:
         ModelLoader(std::string model_name);
+        //prevent copying
+        ModelLoader(ModelLoader const&) = delete;
+        ModelLoader& operator=(ModelLoader const&) = delete;
+        //prevent move constructor/assignment
+        ModelLoader(ModelLoader&&) = delete;
+        ModelLoader& operator=(ModelLoader&&) = delete;
         
         ~ModelLoader();
 
