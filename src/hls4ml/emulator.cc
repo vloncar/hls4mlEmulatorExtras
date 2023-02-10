@@ -12,35 +12,42 @@ ModelLoader::~ModelLoader(){
     dlclose(model_lib_);
 }
 
-Model* ModelLoader::load_model()
+
+std::shared_ptr<Model> ModelLoader::load_model()
 {
+    //Open the model .so
     model_lib_ = dlopen(model_name_.c_str(), RTLD_LAZY | RTLD_LOCAL);
     if (!model_lib_) {
         std::cerr << "Cannot load library: " << dlerror() << std::endl;
-        throw "hls4ml emulator load_model() failure!";
+        throw std::runtime_error("hls4ml emulator model library dlopen failure!");
     }
     
+    //bind the model .so's "create_model" function to "create_model" so we can make a model later
     create_model_cls* create_model = (create_model_cls*) dlsym(model_lib_, "create_model");
     const char* dlsym_error = dlerror();
     if (dlsym_error) {
-        std::cerr << "Cannot load symbol 'create_model': " << dlsym_error << std::endl;
-        throw "hls4ml emulator create_model() failure!";
+        throw std::runtime_error("hls4ml emulator failed to load 'create_model' symbol!");
     }
-    
-    model_ = create_model();
-    
-    return model_;
-}
 
-void ModelLoader::destroy_model()
-{
+    //bind the model .so's "destroy_model" function to "destroy" so the model can also be destroyed later
     destroy_model_cls* destroy = (destroy_model_cls*) dlsym(model_lib_, "destroy_model");
-    const char* dlsym_error = dlerror();
+    dlsym_error = dlerror();
     if (dlsym_error) {
-        std::cerr << "Cannot load symbol destroy_model: " << dlsym_error << std::endl;
-        throw "hls4ml emulator destroy_model() failure!";
+        throw std::runtime_error("hls4ml emulator failed to load 'destroy_model' symbol!");
     }
-    if (model_ != nullptr) {
-        destroy(model_);
-    }
+
+    //Create a/the model from our specific implementation in the loaded .so
+    Model* model = create_model();
+    //Hand over a shared pointer to the model
+    //Also hand over it's destructor, which is, in essence, the "destroy" function/symbol we created earlier
+    return std::shared_ptr<Model>(
+        model,
+        [destroy](Model* m)
+        {
+            if (m != nullptr)
+            {
+                destroy(m);
+            }
+        }
+    );
 }

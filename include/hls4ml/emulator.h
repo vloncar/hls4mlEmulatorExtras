@@ -5,6 +5,7 @@
 #include <string>
 #include <any>
 #include <dlfcn.h>
+#include <memory>
 
 namespace hls4mlEmulator
 {
@@ -23,11 +24,9 @@ namespace hls4mlEmulator
     private:
         std::string model_name_;
         void* model_lib_;
-        Model* model_ = nullptr;
 
     public:
         ModelLoader(std::string model_name);
-        //prevent copying
         ModelLoader(ModelLoader const&) = delete;
         ModelLoader& operator=(ModelLoader const&) = delete;
         //prevent move constructor/assignment
@@ -36,8 +35,7 @@ namespace hls4mlEmulator
         
         ~ModelLoader();
 
-        Model* load_model();
-        void destroy_model();
+        std::shared_ptr<Model> load_model();
     };
 }
 
