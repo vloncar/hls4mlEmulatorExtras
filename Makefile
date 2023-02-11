@@ -1,8 +1,6 @@
 CPP_STANDARD := c++17
 CXXFLAGS := -O3 -fPIC -std=$(CPP_STANDARD)
-ifeq ($(strip $(PREFIX)),)
 PREFIX:=.
-endif
 
 .DEFAULT_GOAL := all
 .PHONY: clean all install
