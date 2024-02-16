@@ -11,9 +11,7 @@ namespace hls4mlEmulator
 {
     class Model {
     public:
-        virtual void prepare_input(std::any input) = 0;
-        virtual void predict() = 0;
-        virtual void read_result(std::any result) = 0;
+        virtual void predict(std::any input, std::any result) const = 0;
         virtual ~Model() = default;
     };
 
@@ -32,7 +30,7 @@ namespace hls4mlEmulator
         //prevent move constructor/assignment
         ModelLoader(ModelLoader&&) = delete;
         ModelLoader& operator=(ModelLoader&&) = delete;
-        
+
         ~ModelLoader();
 
         std::shared_ptr<Model> load_model();
